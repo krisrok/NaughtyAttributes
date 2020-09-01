@@ -25,14 +25,8 @@ namespace NaughtyAttributes.Editor
 				ReorderableList reorderableList = null;
 				if (!_reorderableListsByPropertyName.ContainsKey(key))
 				{
-					reorderableList = new ReorderableList(property.serializedObject, property, true, true, true, true)
+					reorderableList = new ReorderableList(property.serializedObject, property, true, label != null, true, true)
 					{
-						drawHeaderCallback = (Rect r) =>
-						{
-							EditorGUI.LabelField(r, string.Format("{0}: {1}", label.text, property.arraySize), EditorStyles.boldLabel);
-							HandleDragAndDrop(r, reorderableList);
-						},
-
 						drawElementCallback = (Rect r, int index, bool isActive, bool isFocused) =>
 						{
 							SerializedProperty element = property.GetArrayElementAtIndex(index);
@@ -48,6 +42,19 @@ namespace NaughtyAttributes.Editor
 							return EditorGUI.GetPropertyHeight(property.GetArrayElementAtIndex(index)) + 4.0f;
 						}
 					};
+
+					if (label != null)
+					{
+						reorderableList.drawHeaderCallback = (Rect r) =>
+						{
+							EditorGUI.LabelField(r, string.Format("{0}: {1}", label.text, property.arraySize), EditorStyles.boldLabel);
+							HandleDragAndDrop(r, reorderableList);
+						};
+					}
+					else
+					{
+						reorderableList.headerHeight = 1;
+					}
 
 					_reorderableListsByPropertyName[key] = reorderableList;
 				}

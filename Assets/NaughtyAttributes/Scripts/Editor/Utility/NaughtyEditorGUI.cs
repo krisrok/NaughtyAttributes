@@ -27,14 +27,53 @@ namespace NaughtyAttributes.Editor
 			PropertyField_Implementation(dummyRect, property, includeChildren, DrawPropertyField_Layout);
 		}
 
+		private static float _labelWidth;
+
 		private static void DrawPropertyField(Rect rect, SerializedProperty property, GUIContent label, bool includeChildren)
 		{
+			if(HideLabel(label))
+			{
+				label = new GUIContent();
+			}
+
 			EditorGUI.PropertyField(rect, property, label, includeChildren);
+			
+			RestoreLabel(label);
+		}
+
+		private static void RestoreLabel(GUIContent label)
+		{
+			EditorGUIUtility.labelWidth = _labelWidth;
 		}
 
 		private static void DrawPropertyField_Layout(Rect rect, SerializedProperty property, GUIContent label, bool includeChildren)
 		{
+			if (HideLabel(label))
+			{
+				label = new GUIContent();
+			}
+
 			EditorGUILayout.PropertyField(property, label, includeChildren);
+
+			RestoreLabel(label);
+		}
+
+		private static bool HideLabel(GUIContent label)
+		{
+			var labelWidth = EditorGUIUtility.labelWidth;
+			if (labelWidth != Mathf.Epsilon)
+				_labelWidth = labelWidth;
+
+			if (label == null)
+			{
+				EditorGUIUtility.labelWidth = Mathf.Epsilon;
+				return true;
+			}
+			else
+			{
+				EditorGUIUtility.labelWidth = _labelWidth;
+				return false;
+			}
 		}
 
 		private static void PropertyField_Implementation(Rect rect, SerializedProperty property, bool includeChildren, PropertyFieldFunction propertyFieldFunction)
@@ -46,7 +85,7 @@ namespace NaughtyAttributes.Editor
 			}
 			else
 			{
-				GUIContent label = new GUIContent(PropertyUtility.GetLabel(property));
+				GUIContent label = PropertyUtility.GetLabelGUIContent(property);
 				bool anyDrawerAttribute = PropertyUtility.GetAttributes<DrawerAttribute>(property).Any();
 
 				if (!anyDrawerAttribute)

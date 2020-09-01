@@ -316,11 +316,16 @@ namespace NaughtyAttributes.Editor
 
 			var propertyRect = rect;
 			var labelRect = rect;
-			labelRect.width -= EditorGUIUtility.labelWidth;
-			propertyRect.width -= EditorGUIUtility.labelWidth;
-			propertyRect.x = EditorGUIUtility.labelWidth + 20;
 
-			EditorGUI.LabelField(labelRect, label);
+			if (label != null)
+			{
+				labelRect.width -= EditorGUIUtility.labelWidth;
+				propertyRect.width -= EditorGUIUtility.labelWidth;
+				propertyRect.x = EditorGUIUtility.labelWidth + 20;
+
+				EditorGUI.LabelField(labelRect, label);
+			}
+
 			if (EditorGUI.DropdownButton(propertyRect, new GUIContent(options.SelectedValue), FocusType.Keyboard))
 			{
 				if (options.KeepStateWhenReopened == false || _dropdownState == null)

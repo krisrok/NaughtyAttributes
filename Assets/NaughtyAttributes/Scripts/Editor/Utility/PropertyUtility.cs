@@ -26,8 +26,19 @@ namespace NaughtyAttributes.Editor
 			return (T[])fieldInfo.GetCustomAttributes(typeof(T), true);
 		}
 
+		public static GUIContent GetLabelGUIContent(SerializedProperty property)
+		{
+			if (GetAttribute<HideLabelAttribute>(property) != null)
+				return null;
+
+			return new GUIContent(GetLabel(property));
+		}
+
 		public static string GetLabel(SerializedProperty property)
 		{
+			if (GetAttribute<HideLabelAttribute>(property) != null)
+				return null;
+
 			LabelAttribute labelAttribute = GetAttribute<LabelAttribute>(property);
 			return (labelAttribute == null)
 				? property.displayName
