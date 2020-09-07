@@ -21,11 +21,12 @@ namespace NaughtyAttributes.Editor
 			if (property.isArray)
 			{
 				string key = GetPropertyKeyName(property);
+				var attribute = PropertyUtility.GetAttribute<ReorderableListAttribute>(property);
 
 				ReorderableList reorderableList = null;
 				if (!_reorderableListsByPropertyName.ContainsKey(key))
 				{
-					reorderableList = new ReorderableList(property.serializedObject, property, true, true, true, true)
+					reorderableList = new ReorderableList(property.serializedObject, property, true, attribute.DrawHeader, true, true)
 					{
 						drawHeaderCallback = (Rect r) =>
 						{
@@ -48,6 +49,9 @@ namespace NaughtyAttributes.Editor
 							return EditorGUI.GetPropertyHeight(property.GetArrayElementAtIndex(index)) + 4.0f;
 						}
 					};
+
+					if (attribute.DrawHeader == false)
+						reorderableList.headerHeight = 1;
 
 					_reorderableListsByPropertyName[key] = reorderableList;
 				}
