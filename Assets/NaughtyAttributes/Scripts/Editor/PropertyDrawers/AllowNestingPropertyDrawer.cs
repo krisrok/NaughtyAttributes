@@ -12,5 +12,10 @@ namespace NaughtyAttributes.Editor
 			EditorGUI.PropertyField(rect, property, label, true);
 			EditorGUI.EndProperty();
 		}
+
+		protected override float GetPropertyHeight_Internal(SerializedProperty property, GUIContent label)
+		{
+			return EditorGUI.GetPropertyHeight(property, true);
+		}
 	}
 }
