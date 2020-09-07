@@ -16,6 +16,8 @@ namespace NaughtyAttributes.Editor
 		private IEnumerable<MethodInfo> _methods;
 		private Dictionary<string, SavedBool> _foldouts = new Dictionary<string, SavedBool>();
 
+		protected virtual bool HideScriptProperty() => false;
+
 		protected virtual void OnEnable()
 		{
 			_nonSerializedFields = ReflectionUtility.GetAllFields(
@@ -38,7 +40,7 @@ namespace NaughtyAttributes.Editor
 			GetSerializedProperties(ref _serializedProperties);
 
 			bool anyNaughtyAttribute = _serializedProperties.Any(p => PropertyUtility.GetAttribute<INaughtyAttribute>(p) != null);
-			if (!anyNaughtyAttribute)
+			if (!anyNaughtyAttribute && HideScriptProperty() == false)
 			{
 				DrawDefaultInspector();
 			}
@@ -77,6 +79,9 @@ namespace NaughtyAttributes.Editor
 			{
 				if (property.name.Equals("m_Script", System.StringComparison.Ordinal))
 				{
+					if (HideScriptProperty() || serializedObject.targetObject.GetType().GetCustomAttribute<HideScriptPropertyAttribute>(true) != null)
+						continue;
+
 					using (new EditorGUI.DisabledScope(disabled: true))
 					{
 						EditorGUILayout.PropertyField(property);
